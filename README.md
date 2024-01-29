@@ -11,3 +11,6 @@ A few of the emulators that support CHD files include:
 - [PPSSPP](https://www.ppsspp.org) (PSP)
 
 It is especially useful for PlayStation 1 games, as the ISO format is incompatible with many games that have multiple tracks. 
+> [!NOTE]
+> Currently the chd conversion may lose track data for games that have [specific audio tracks](https://github.com/mamedev/mame/issues/10308).<br>
+> This should be fixed in future chdman updates
