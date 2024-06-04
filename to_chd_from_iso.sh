@@ -75,14 +75,12 @@ build_maxcso() {
 
 cso_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
-		echo "${PURPLE}Converting ${file%.*} to CSO...${NC}"
 		do ./maxcso "${file%.*}.iso"; 
 	done
 }
 
 chd_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
-		echo "${PURPLE}Converting ${file%.*} to CHD...${NC}"	
 		do chdman createdvd --hunksize 2048 -i "${file%.*}.iso" -o "${file%.*}.chd" -c zstd; 
 	done
 	
