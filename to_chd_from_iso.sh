@@ -34,7 +34,7 @@ fi
 # Conversion
 echo -e "${PURPLE}Starting conversion...${NC}"
 for file in ${PWD}/*.(iso|ISO); 
-	do chdman createcd -i "${file%.*}.iso" -o "${file%.*}.chd"; 
+	do chdman createdvd --hunksize 2048 -i "${file%.*}.iso" -o "${file%.*}.chd" -c zstd; 
 done
 
 if [ $? -eq 0 ]; then
