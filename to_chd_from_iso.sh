@@ -11,7 +11,9 @@ SCRIPT_DIR=${0:a:h}
 cd "$SCRIPT_DIR"
 
 # Introduction
-echo "${PURPLE}\nThis script will search the current folder and convert all ISOs it finds to either CSO or CHD format\n${NC}"
+echo "${PURPLE}\nThis script will search the current folder and convert all ISOs it finds to either ${GREEN}CSO${PURPLE} or ${GREEN}CHD${PURPLE} format\n${NC}"
+
+echo "${PURPLE}It uses ${GREEN}chdman${PURPLE} and ${GREEN}maxcso${PURPLE} to handle the conversions\n${NC}"
 
 echo "${GREEN}Homebrew${PURPLE} and the ${GREEN}Xcode command-line tools${PURPLE} are required${NC}"
 echo "${PURPLE}If they are not present you will be prompted to install them${NC}\n"
@@ -75,13 +77,17 @@ build_maxcso() {
 
 cso_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
-		do ./maxcso "${file%.*}.iso"; 
+		do 
+			echo "${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}"
+			./maxcso "${file%.*}.iso"; 
 	done
 }
 
 chd_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
-		do chdman createdvd --hunksize 2048 -i "${file%.*}.iso" -o "${file%.*}.chd" -c zstd; 
+		do
+			echo "${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}"
+			chdman createdvd --hunksize 2048 -i "${file%.*}.iso" -o "${file%.*}.chd" -c zstd; 
 	done
 	
 	if [ $? -eq 0 ]; then
