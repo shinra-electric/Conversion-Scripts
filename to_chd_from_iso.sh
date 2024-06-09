@@ -78,7 +78,7 @@ build_maxcso() {
 cso_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
 		do 
-			echo "${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}"
+			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}"
 			./maxcso "${file%.*}.iso"; 
 	done
 }
