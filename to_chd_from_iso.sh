@@ -79,7 +79,7 @@ cso_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
 		do 
 			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}";
-			./maxcso "${file%.*}.iso"; 
+			./maxcso --threads=$(sysctl -n hw.ncpu)　"${file%.*}.iso"; 
 	done
 }
 
