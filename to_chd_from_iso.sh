@@ -78,7 +78,7 @@ build_maxcso() {
 cso_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
 		do 
-			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}"
+			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}";
 			./maxcso "${file%.*}.iso"; 
 	done
 }
@@ -86,7 +86,7 @@ cso_conversion() {
 chd_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
 		do
-			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}"
+			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}";
 			chdman createdvd --hunksize 2048 -i "${file%.*}.iso" -o "${file%.*}.chd" -c zstd; 
 	done
 	
