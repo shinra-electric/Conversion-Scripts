@@ -68,10 +68,8 @@ build_maxcso() {
 	
 	git clone --recursive https://github.com/unknownbrackets/maxcso
 	mv maxcso maxcso-source 
-	cd maxcso-source
-	make 
-	cp maxcso ..
-	cd ..
+	make -C maxcso-source
+	cp maxcso-source/maxcso ..
 	rm -rf maxcso-source
 }
 
@@ -79,7 +77,7 @@ cso_conversion() {
 	for file in ${PWD}/*.(iso|ISO); 
 		do 
 			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}";
-			./maxcso --threads=$(sysctl -n hw.ncpu)　"${file%.*}.iso"; 
+			./maxcso --threads=$(sysctl -n hw.ncpu) "${file%.*}.iso"; 
 	done
 }
 
