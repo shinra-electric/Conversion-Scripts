@@ -69,7 +69,7 @@ build_maxcso() {
 	git clone --recursive https://github.com/unknownbrackets/maxcso
 	mv maxcso maxcso-source 
 	make -C maxcso-source
-	cp maxcso-source/maxcso ..
+	cp maxcso-source/maxcso .
 	rm -rf maxcso-source
 }
 
