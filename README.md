@@ -1,6 +1,9 @@
 # Conversion Scripts
 Scripts for converting various file types suitable for emulation on macOS
 
+## CSO
+The CSO file format is a compressed version of an ISO file. It is supported by Sony's PSP and PS2, as well as the PPSSPP and PCSX2 emulators.
+
 ## CHD
 The CHD file format ([Compressed Hunks of Data](https://en.wikipedia.org/wiki/MAME#ROM_data)) was originally created by the MAME team to handle various disc formats used by arcade machines. But due to its versatility and lossless compression, it has become popular with many emulators for consoles that used disc media storage.<br> 
 
