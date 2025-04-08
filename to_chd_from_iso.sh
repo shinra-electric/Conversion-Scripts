@@ -10,18 +10,20 @@ NC='\033[0m' # No Color
 SCRIPT_DIR=${0:a:h}
 cd "$SCRIPT_DIR"
 
+CORES=$(sysctl -n hw.ncpu)
+ARCH="$(uname -m)"
+
 # Introduction
-echo "${PURPLE}\nThis script will search the current folder and convert all ISOs it finds to either ${GREEN}CSO${PURPLE} or ${GREEN}CHD${PURPLE} format\n${NC}"
-
-echo "${PURPLE}It uses ${GREEN}chdman${PURPLE} and ${GREEN}maxcso${PURPLE} to handle the conversions\n${NC}"
-
-echo "${GREEN}Homebrew${PURPLE} and the ${GREEN}Xcode command-line tools${PURPLE} are required${NC}"
-echo "${PURPLE}If they are not present you will be prompted to install them${NC}\n"
-
-echo "${PURPLE}The CHD conversion tool will use a hunk size of 2048 so it will be compatible with PPSSPP\n${NC}"
-
-echo "${PURPLE}If you are converting to CSO files the ${GREEN}maxcso${PURPLE} utility will need to be compiled${NC}\n"
-
+introduction() {
+	echo "${PURPLE}\nThis script will search the current folder and convert all ISOs it finds to either ${GREEN}CSO${PURPLE} or ${GREEN}CHD${PURPLE} format\n${NC}"
+	
+	echo "${PURPLE}It uses ${GREEN}chdman${PURPLE} and ${GREEN}maxcso${PURPLE} to handle the conversions\n${NC}"
+	
+	echo "${GREEN}Homebrew${PURPLE} and the ${GREEN}Xcode command-line tools${PURPLE} are required${NC}"
+	echo "${PURPLE}If they are not present you will be prompted to install them${NC}\n"
+	
+	echo "${PURPLE}The CHD conversion tool will use a hunk size of 2048 so it will be compatible with PPSSPP\n${NC}"
+}
 
 # Functions for checking for Homebrew installation
 homebrew_check() {
@@ -60,17 +62,21 @@ single_dependency_check() {
 	fi
 }
 
-build_maxcso() {
-	homebrew_check
-	single_dependency_check lz4
-	single_dependency_check libuv
-	single_dependency_check libdeflate
-	
-	git clone --recursive https://github.com/unknownbrackets/maxcso
-	mv maxcso maxcso-source 
-	make -C maxcso-source
-	cp maxcso-source/maxcso .
-	rm -rf maxcso-source
+download_maxcso() {
+	if [[ "${ARCH}" == "arm64" || "${ARCH}" == "x64" ]]; then 
+		curl -OL https://github.com/shinra-electric/maxcso/releases/download/v1.13.0/maxcso-macos-$ARCH.tar
+		tar -xf maxcso-macos-$ARCH.tar	
+		rm maxcso-macos-$ARCH.tar
+		
+		if [[ -f maxcso ]]; then 
+			echo "${PURPLE}Download of maxcso successful${NC}"
+		else 
+			echo "${RED}Could not download maxcso${NC}"	
+		fi
+		
+	else 
+		echo "Could not identify your CPU"
+	fi
 }
 
 cso_conversion() {
@@ -107,7 +113,7 @@ main_menu() {
 			"CSO")
 				if [ ! -f maxcso ]; then
 					echo "${PURPLE}maxcso tool not found. Building from source...${NC}"
-					build_maxcso
+					download_maxcso
 				fi
 				cso_conversion
 				break
@@ -127,4 +133,5 @@ main_menu() {
 }
 
 # main
+introduction
 main_menu
