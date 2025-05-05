@@ -112,7 +112,7 @@ main_menu() {
 		case $opt in
 			"CSO")
 				if [ ! -f maxcso ]; then
-					echo "${PURPLE}maxcso tool not found. Building from source...${NC}"
+					echo "${PURPLE}maxcso tool not found. Downloading...${NC}"
 					download_maxcso
 				fi
 				cso_conversion
