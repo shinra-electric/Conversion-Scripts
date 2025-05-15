@@ -99,11 +99,11 @@ chd_conversion() {
 cleanup() {
 	if [[ -f maxcso ]]; then 
 		rm -rf maxcso
-	else
+	fi
 	
 	if [[ -f chdman ]]; then 
 		rm -rf chdman
-	else 
+	fi
 }
 
 main_menu() {
