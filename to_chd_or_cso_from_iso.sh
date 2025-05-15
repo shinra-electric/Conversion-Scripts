@@ -63,19 +63,14 @@ single_dependency_check() {
 }
 
 download_maxcso() {
-	if [[ "${ARCH}" == "arm64" || "${ARCH}" == "x64" ]]; then 
-		curl -OL https://github.com/shinra-electric/maxcso/releases/download/v1.13.0/maxcso-macos-$ARCH.tar
-		tar -xf maxcso-macos-$ARCH.tar	
-		rm maxcso-macos-$ARCH.tar
-		
-		if [[ -f maxcso ]]; then 
-			echo "${PURPLE}Download of maxcso successful${NC}"
-		else 
-			echo "${RED}Could not download maxcso${NC}"	
-		fi
-		
+	curl -OL https://github.com/shinra-electric/maxcso/releases/download/v1.13.0b/maxcso-macOS-Universal.tar
+	tar -xf maxcso-macOS-Universal.tar	
+	rm maxcso-macOS-Universal.tar
+	
+	if [[ -f maxcso ]]; then 
+		echo "${PURPLE}Download of maxcso successful${NC}"
 	else 
-		echo "Could not identify your CPU"
+		echo "${RED}Could not download maxcso${NC}"	
 	fi
 }
 
