@@ -96,6 +96,16 @@ chd_conversion() {
 	fi
 }
 
+cleanup() {
+	if [[ -f maxcso ]]; then 
+		rm -rf maxcso
+	else
+	
+	if [[ -f chdman ]]; then 
+		rm -rf chdman
+	else 
+}
+
 main_menu() {
 	# Ask the user to select which game to build
 	PS3='Select which format to convert your ISOs to: '
@@ -111,12 +121,14 @@ main_menu() {
 					download_maxcso
 				fi
 				cso_conversion
+				cleanup
 				break
 				;;
 			"CHD")
 				homebrew_check
 				single_dependency_check rom-tools
 				chd_conversion
+				cleanup
 				break
 				;;
 			*) 
