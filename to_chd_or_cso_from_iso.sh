@@ -10,8 +10,12 @@ NC='\033[0m' # No Color
 SCRIPT_DIR=${0:a:h}
 cd "$SCRIPT_DIR"
 
-CORES=$(sysctl -n hw.ncpu)
-ARCH="$(uname -m)"
+set_vars() {
+	CORES=$(sysctl -n hw.ncpu)
+	ARCH="$(uname -m)"
+	DEPS=( libuv rom-tools )
+}
+
 
 # Introduction
 introduction() {
@@ -29,25 +33,97 @@ introduction() {
 homebrew_check() {
 	echo "${PURPLE}Checking for Homebrew...${NC}"
 	if ! command -v brew &> /dev/null; then
-		echo -e "${PURPLE}Homebrew not found. Installing Homebrew...${NC}"
-		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-		if [[ "${ARCH_NAME}" == "arm64" ]]; then 
-			(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> $HOME/.zprofile
-			eval "$(/opt/homebrew/bin/brew shellenv)"
-			else 
-			(echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> $HOME/.zprofile
-			eval "$(/usr/local/bin/brew shellenv)"
-		fi
-		
-		# Check for errors
-		if [ $? -ne 0 ]; then
-			echo "${RED}There was an issue installing Homebrew${NC}"
-			echo "${PURPLE}Quitting script...${NC}"	
-			exit 1
-		fi
+		echo "${RED}Homebrew has not been detected${NC}\n"
+		homebrew_install_menu
 	else
-		echo -e "${PURPLE}Homebrew found. Updating Homebrew...${NC}"
-		brew update
+		echo "${GREEN}Homebrew has been detected${NC}\n"
+		homebrew_update_menu
+	fi
+}
+
+homebrew_install_menu() {
+	echo "${GREEN}Homebrew${PURPLE} and the ${GREEN}Xcode command-line tools${PURPLE} are required${NC}\n"
+	PS3='Would you like to install Homebrew? '
+	OPTIONS=(
+		"Install"
+		"Quit")
+	select opt in $OPTIONS[@]
+	do
+		case $opt in
+			"Install")
+				install_homebrew
+				dependencies_check
+				break
+				;;
+			"Quit")
+				echo "${PURPLE}The script cannot run without Homebrew${NC}"
+				echo "${RED}Quitting${NC}"
+				exit 0
+				;;
+			*) 
+				echo "\"$REPLY\" is not one of the options..."
+				echo "Enter the number of the option and press enter to select"
+				;;
+		esac
+	done
+}
+
+homebrew_update_menu() {
+	echo "${PURPLE}You may need to install or update Homebrew packages${NC}"
+	echo "${PURPLE}It is recommended to perform this check if it your first time running the script${NC}\n"
+	PS3='Would you like to check dependencies? '
+	OPTIONS=(
+		"Continue without checking"
+		"Install / Update")
+	select opt in $OPTIONS[@]
+	do
+		case $opt in
+			"Continue without checking")
+				echo "\n${RED}Skipping Homebrew checks${NC}"
+				echo "${PURPLE}The script will fail if any of the dependencies are missing${NC}\n"
+				break
+				;;
+			"Install / Update")
+				update_homebrew
+				dependencies_check
+				break
+				;;
+			*) 
+				echo "\"$REPLY\" is not one of the options..."
+				echo "Enter the number of the option and press enter to select"
+				;;
+		esac
+	done
+}
+
+install_homebrew() {
+	echo "${PURPLE}Installing Homebrew...${NC}"
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	if [[ "${ARCH}" == "arm64" ]]; then 
+		(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> $HOME/.zprofile
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+	else 
+		(echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> $HOME/.zprofile
+		eval "$(/usr/local/bin/brew shellenv)"
+	fi
+	
+	# Check for errors
+	if [ $? -ne 0 ]; then
+		echo "${RED}There was an issue installing Homebrew${NC}"
+		echo "${PURPLE}Quitting script...${NC}"	
+		exit 1
+	fi
+}
+
+update_homebrew() {
+	echo "${PURPLE}Updating Homebrew...${NC}"
+	brew update
+	
+	# Check for errors
+	if [ $? -ne 0 ]; then
+		echo "${RED}There was an issue updating Homebrew${NC}"
+		echo "${PURPLE}Quitting script...${NC}"	
+		exit 1
 	fi
 }
 
@@ -60,6 +136,14 @@ single_dependency_check() {
 		 echo -e "${PURPLE}Did not find $1. Installing...${NC}"
 		brew install $1
 	fi
+}
+
+dependencies_check() {
+	echo "${PURPLE}Checking for Homebrew dependencies...${NC}"
+	for dep in $DEPS[@]
+	do 
+		single_dependency_check $dep
+	done
 }
 
 download_maxcso() {
@@ -80,6 +164,12 @@ cso_conversion() {
 			echo "\n${PURPLE}Converting ${GREEN}$(basename "${file%.*}")${NC}";
 			./maxcso --threads=$(sysctl -n hw.ncpu) "${file%.*}.iso"; 
 	done
+	
+	if [ $? -eq 0 ]; then
+		echo "${GREEN}Conversion completed${NC}"
+	else
+		echo "${RED}Error encountered...${NC}"
+	fi
 }
 
 chd_conversion() {
@@ -120,13 +210,13 @@ main_menu() {
 					echo "${PURPLE}maxcso tool not found. Downloading...${NC}"
 					download_maxcso
 				fi
+				# single_dependency_check libuv
 				cso_conversion
 				cleanup
 				break
 				;;
 			"CHD")
-				homebrew_check
-				single_dependency_check rom-tools
+				# single_dependency_check rom-tools
 				chd_conversion
 				cleanup
 				break
@@ -140,5 +230,7 @@ main_menu() {
 }
 
 # main
+set_vars
 introduction
+homebrew_check
 main_menu
